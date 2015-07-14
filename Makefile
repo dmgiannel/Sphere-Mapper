@@ -1,5 +1,25 @@
-CC = gcc -std=c99
-LIBS = -lGL -lGLU -lglut -lpng
+ifndef OS
+	OS=$(shell uname)
+endif
+ifeq ($(OS), Linux)
+	OPT += -Wall -g
+	LIBS += -lm
+endif
+
+ifeq ($(OS), Darwin)
+	OPT += -I/usr/local/include -Wall -Wno-deprecated -g
+	PREDEF += -D_APPLE
+	LIBS += -L/usr/local/lib
+endif
+
+ifeq ($(OS), Darwin)
+	LIBS += -framework OpenGL -framework GLUT
+else
+	LIBS += -lGL -lGLU -lglut
+endif
+
+CC = gcc
+LIBS+= -lpng
 VPATH = src: ../headers
 IDIR = src/headers
 DEPS = tools.h zpr.h
@@ -7,11 +27,12 @@ OBJ = tools.o viewer.o zpr.o
 CFLAGS = -I$(IDIR) -std=c99 -g -Wl,--stack,16777216
 	
 %.o: %.c $(DEPS)
-		$(CC) -c -o $@ $< $(CFLAGS) $(LIBS)
+		$(CC) $(OPT) $(PREDEFS) -c -o $@ $< 
 		
-viewer : $(OBJ)
-	gcc -o $@ $^ $(CFLAGS) $(LIBS)
+all : $(OBJ)
+	$(CC) *.o -o viewer $(LIBS) $(CFLAGS)
 	rm -f *.o
+
 	
 .PHONY : clean
 
