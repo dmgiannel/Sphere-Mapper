@@ -1,7 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#ifdef _APPLE
+#include <GLUT.glut.h>
+#else
 #include <GL/glut.h>
+#endif
 #include <math.h>
 #include <png.h>
 #include "zpr.h"
