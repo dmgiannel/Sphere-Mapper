@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef _APPLE
+#ifdef __APPLE__
 #include <GLUT.glut.h>
 #else
 #include <GL/glut.h>
