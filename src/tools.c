@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -10,7 +11,9 @@
 #include <png.h>
 #include "zpr.h"
 #include "tools.h"
-#define M_PI 3.14159265358979323846264338327
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif //M_PI
 
 int NTmax = 0;
 int NVmax = 0;
@@ -158,7 +161,7 @@ void normalize (struct vertex *v){
 //import texture from a png image
 GLuint loadTexture(char *filename, int width, int height) 
  {
-	GLuint ERROR = NULL;
+	GLuint ERROR = 0;
 	//header for testing if it is a png
 	png_byte header[8];
    
