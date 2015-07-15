@@ -1,6 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif //__APPLE__
 #include <math.h>
 
 struct coord{
