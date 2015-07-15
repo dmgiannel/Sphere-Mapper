@@ -28,7 +28,7 @@ VPATH = src: ../headers
 IDIR = src/headers
 DEPS = tools.h zpr.h
 OBJ = tools.o viewer.o zpr.o
-CFLAGS += -I$(IDIR) -std=c99 -g
+CFLAGS += -I$(IDIR) -std=c99 -g -Wno-deprecated-declarations
 
 %.o: %.c $(DEPS)
 		$(CC) $(OPT) $(PREDEFS) -c -o $@ $< 
