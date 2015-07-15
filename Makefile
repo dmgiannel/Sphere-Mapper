@@ -23,7 +23,7 @@ else
 endif
 
 CC = gcc
-LIBS+= -lpng
+LIBS+= -lpng -lz
 VPATH = src: ../headers
 IDIR = src/headers
 DEPS = tools.h zpr.h
