@@ -7,7 +7,6 @@
 #include <GL/glut.h>
 #endif
 #include <math.h>
-#include <png.h>
 #include <string.h>
 #include "tools.h"
 #include "zpr.h"
