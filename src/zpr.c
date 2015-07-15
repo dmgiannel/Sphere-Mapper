@@ -11,7 +11,10 @@
 #define bool int
 #define true 1
 #define false 0
-#define M_PI 3.14159265358979323846264338327
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif //M_PI
+
 
 static double _left   = 0.0;
 static double _right  = 0.0;
