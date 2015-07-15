@@ -6,6 +6,10 @@ ifeq ($(OS), Linux)
 	LIBS += -lm
 endif
 
+ifeq ($(OS), Windows_NT)
+	CFLAGS +=  -Wl,--stack,16777216
+endif
+
 ifeq ($(OS), Darwin)
 	OPT += -I/usr/local/include -Wall -Wno-deprecated -g
 	PREDEF += -D_APPLE
@@ -24,8 +28,8 @@ VPATH = src: ../headers
 IDIR = src/headers
 DEPS = tools.h zpr.h
 OBJ = tools.o viewer.o zpr.o
-CFLAGS = -I$(IDIR) -std=c99 -g -Wl,--stack,16777216
-	
+CFLAGS += -I$(IDIR) -std=c99 -g
+
 %.o: %.c $(DEPS)
 		$(CC) $(OPT) $(PREDEFS) -c -o $@ $< 
 		
