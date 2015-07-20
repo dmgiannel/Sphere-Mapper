@@ -7,7 +7,9 @@ Sphere-Mapper is a small program in C that takes maps in Lambert Cylindrical Equ
 To run Sphere-mapper, you will first need to have the ability to compile programs in the X Windows format. On Windows, an example that should suffice for this is Cygwin (includes an Xserver in installation if you choose it during setup). On Macs, termainal with Xcode should be capable of this. In addition to a compiler, you will need a number of libraries to cover the functions within Sphere-Mapper.These are:
 
 Zlib (required for libpng, so install it first): http://www.zlib.net/
+
 Libpng: http://www.libpng.org/pub/png/libpng.html
+
 GLUT libraries - see below
 
 # OPENGL AND GLUT VIEWER
