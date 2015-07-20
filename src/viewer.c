@@ -41,19 +41,14 @@ void display()
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glClientActiveTexture(GL_TEXTURE_2D);
 	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glVertexPointer(3, GL_DOUBLE, sizeof(struct vertex), vertices);
-	//glIndexPointer(GL_UNSIGNED_INT, sizeof(struct triangle), triangles);
-	//glEnableClientState(GL_INDEX_ARRAY);
-	glNormalPointer(GL_DOUBLE, sizeof(struct vertex), vertices);
 	glTexCoordPointer(2, GL_DOUBLE, sizeof(struct coord), texCoords);
-	char * info = malloc(sizeof(int)*20);
+	char info [500];
 	getLatLong(info);
 	glutSetWindowTitle(info);
 	glDrawArrays(GL_TRIANGLES, 0, NVERT);
 	glutSwapBuffers();
-	
 }
 
 void keyPress(unsigned char key, int x, int y){
@@ -81,24 +76,11 @@ void keyPress(unsigned char key, int x, int y){
 
 void init(void)
 {
-	GLfloat mat_specular[] = {1.0, 1.0, 1.0, 1.0};
-	GLfloat mat_shininess[] = {50.0};
-	GLfloat light_position[] = {0.0, 0.0, -4.0, 1.0};
-	GLfloat white_light[] = {1.0, 1.0, 1.0, 1.0};
-	GLfloat lmodel_ambient[] = {0.1, 0.1, 0.1, 1.0};
-	glShadeModel(GL_SMOOTH);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	char image[] = ("mars.png");
 	char local[50];
-	strcat(local, "./maps/");
+	strcpy(local, "./maps/");
 	strcat(local, image);
 	texture = loadTexture(local);
 	add_tex_data();

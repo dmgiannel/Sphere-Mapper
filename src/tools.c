@@ -441,8 +441,8 @@ void take_screenshot(char *filename){
 }
 
 //Returns string indicating latitude,
-//longitude and forward azimuth (using 
-//up vector from center of image)
+//longitude and forward azimuth fazi 
+//(using up vector from center of image)
 //fazi eqn: http://www.movable-type.co.uk/scripts/latlong.html
 void getLatLong(char * info){
 	GLdouble mod[16];

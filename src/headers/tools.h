@@ -67,7 +67,4 @@ GLuint loadTexture(char *filename);
 void displayKey(unsigned char key, int x, int y);
 void take_screenshot(char *filename);
 struct latLongUp getLLInfo(struct vertex cpos, struct vertex cup);
-//struct vertex getUpVector();
-//struct vertex getCameraPos();
 void getLatLong(char * info);
-//char *printLatLong(struct vertex v);
