@@ -26,15 +26,16 @@ CC = gcc
 LIBS+= -lpng -lz
 VPATH = src: ../headers
 IDIR = src/headers
+SDIR = src/
 DEPS = tools.h zpr.h
 OBJ = tools.o viewer.o zpr.o
 CFLAGS += -I$(IDIR) -std=c99 -g -Wno-deprecated-declarations
 
-%.o: %.c $(DEPS)
-		$(CC) $(OPT) $(PREDEFS) -c -o $@ $< 
-		
-all : $(OBJ)
-	$(CC) *.o -o viewer $(LIBS) $(CFLAGS)
+all :
+	$(CC) $(OPT) $(SDIR)tools.c -c $(CFLAGS)
+	$(CC) $(OPT) $(SDIR)viewer.c -c $(CFLAGS)
+	$(CC) $(OPT) $(SDIR)zpr.c -c $(CFLAGS)
+	$(CC) *.o -o viewer $(LIBS)
 	rm -f *.o
 
 	
