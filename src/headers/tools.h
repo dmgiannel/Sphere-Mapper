@@ -1,3 +1,14 @@
+/*Lambert cylindrical equal area projection viewer 
+ *Version 0.1
+ *July 2015
+ *David Giannella, School of Arts and Sciences
+ *University of Rochester
+ *dgiannel@u.rochester.edu
+ *
+ *These files may be redistributed and used in accordance with the 
+ *GNU General Public License, which has been provided with Sphere-Mapper.
+ */
+ 
 #include <stdlib.h>
 #include <stdio.h>
 #ifdef __APPLE__

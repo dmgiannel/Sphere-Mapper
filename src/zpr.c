@@ -1,3 +1,13 @@
+/*
+ * Zoom-pan-rotate mouse manipulation module for GLUT
+ * Version 0.4, October 2003
+ *
+ * Nigel Stewart
+ * School of Computer Science and Information Technology
+ * RMIT University
+ * nigels@cs.rmit.edu.au
+ */
+ 
 #include <stdlib.h>
 #include <stdio.h>
 #include <memory.h>

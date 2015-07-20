@@ -1,4 +1,14 @@
-#define _USE_MATH_DEFINES
+/*Lambert cylindrical equal area projection viewer 
+ *Version 0.1
+ *July 2015
+ *David Giannella, School of Arts and Sciences
+ *University of Rochester
+ *dgiannel@u.rochester.edu
+ *
+ *These files may be redistributed and used in accordance with the 
+ *GNU General Public License, which has been provided with Sphere-Mapper.
+ */
+ 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -53,6 +63,7 @@ int add_face(int i1, int i2, int i3){
 	return NTRI -1;
 }
 
+//Add a uv coordinate, expanding list if necessary
 int add_coord(double x, double y){
 	struct coord c;
 		c.x = x;
@@ -159,6 +170,7 @@ void normalize (struct vertex *v){
 }
 
 //import texture from a png image
+//https://en.wikibooks.org/wiki/OpenGL_Programming/Intermediate/Textures
 GLuint loadTexture(char *filename, int width, int height) 
  {
 	GLuint ERROR = 0;
