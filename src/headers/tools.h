@@ -1,9 +1,14 @@
 /*Lambert cylindrical equal area projection viewer 
  *Version 0.1
  *July 2015
+ *
  *David Giannella, School of Arts and Sciences
  *University of Rochester
  *dgiannel@u.rochester.edu
+ *
+ *Alice C. Quillen, School of Arts and Science
+ *University of Rochester
+ *alice.quillen@gmail.com
  *
  *These files may be redistributed and used in accordance with the 
  *GNU General Public License, which has been provided with Sphere-Mapper.
@@ -58,7 +63,7 @@ void subdivide(struct vertex v1, struct vertex v2, struct vertex v3, int devh);
 void normalize (struct vertex *v);
 void create_sphere(int devh, double radius);
 void correct_tex_data();
-GLuint loadTexture(char *filename, int width, int height);
+GLuint loadTexture(char *filename);
 void displayKey(unsigned char key, int x, int y);
 void take_screenshot(char *filename);
 struct latLongUp getLLInfo(struct vertex cpos, struct vertex cup);

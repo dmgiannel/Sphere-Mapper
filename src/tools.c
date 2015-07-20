@@ -1,9 +1,14 @@
 /*Lambert cylindrical equal area projection viewer 
  *Version 0.1
  *July 2015
+ *
  *David Giannella, School of Arts and Sciences
  *University of Rochester
  *dgiannel@u.rochester.edu
+ *
+ *Alice C. Quillen, School of Arts and Science
+ *University of Rochester
+ *alice.quillen@gmail.com
  *
  *These files may be redistributed and used in accordance with the 
  *GNU General Public License, which has been provided with Sphere-Mapper.
@@ -171,7 +176,7 @@ void normalize (struct vertex *v){
 
 //import texture from a png image
 //https://en.wikibooks.org/wiki/OpenGL_Programming/Intermediate/Textures
-GLuint loadTexture(char *filename, int width, int height) 
+GLuint loadTexture(char *filename) 
  {
 	GLuint ERROR = 0;
 	//header for testing if it is a png
@@ -246,11 +251,7 @@ GLuint loadTexture(char *filename, int width, int height)
    // get info about png
    png_get_IHDR(png_ptr, info_ptr, &twidth, &theight, &bit_depth, &color_type,
        NULL, NULL, NULL);
- 
-   //update width and height based on png info
-   width = twidth;
-   height = theight;
- 
+	   
    // Update the png info struct.
    png_read_update_info(png_ptr, info_ptr);
  
@@ -258,46 +259,52 @@ GLuint loadTexture(char *filename, int width, int height)
    int rowbytes = png_get_rowbytes(png_ptr, info_ptr);
  
    // Allocate the image_data as a big block, to be given to opengl
-   png_byte image_data[rowbytes * height]; 
-   if (!image_data) {
+	png_byte *image_data;
+	image_data = (png_byte *) malloc(sizeof(png_byte)*rowbytes*theight);
+	if (!image_data) {
      //clean up memory and close stuff
      png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
      fclose(fp);
 	 printf("hi242");
      return ERROR;
-   }
+	}
  
    //row_pointers is for pointing to image_data for reading the png with libpng
-   png_bytep row_pointers[height];
-   if (!row_pointers) {
+	png_bytep *row_pointers;
+	row_pointers = (png_bytep *) malloc(sizeof(png_bytep)*theight);
+	if (!row_pointers) {
      //clean up memory and close stuff
      png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-     free(&image_data);
+     free(image_data);
      fclose(fp);
 	 printf("hi253");
      return ERROR;
-   }
+	}
    // set the individual row_pointers to point at the correct offsets of image_data
-   for (int i = 0; i < height; ++i)
-     row_pointers[height - 1 - i] = image_data + i * rowbytes;
+	for (int i = 0; i < theight; ++i)
+		row_pointers[theight - 1 - i] = image_data + i * rowbytes;
  
    //read the png into image_data through row_pointers
-   png_read_image(png_ptr, row_pointers);
+	png_read_image(png_ptr, row_pointers);
  
-   //Now generate the OpenGL texture object
-   GLuint texture;
-   glGenTextures(1, &texture);
-   glBindTexture(GL_TEXTURE_2D, texture);
-   glTexImage2D(GL_TEXTURE_2D,0, GL_RGBA, width, height, 0,
+	//Now generate the OpenGL texture object
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+    if(color_type == 2)
+    glTexImage2D(GL_TEXTURE_2D,0, GL_RGBA, twidth, theight, 0,
        GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*) image_data);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	else
+	 glTexImage2D(GL_TEXTURE_2D,0, GL_RGBA, twidth, theight, 0,
+       GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*) image_data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
  
    //clean up memory and close stuff
    png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-   //free(image_data);
-   //free(row_pointers);
+   free(image_data);
+   free(row_pointers);
    fclose(fp);
    return texture;
  }
@@ -417,6 +424,7 @@ void take_screenshot(char *filename){
 	}
 	
 	glReadPixels(0,0,w,h,GL_RGB,GL_UNSIGNED_BYTE,image);
+		
 	
 	png_set_IHDR(png_ptr, info_ptr, w, h, 8, 
 	PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);

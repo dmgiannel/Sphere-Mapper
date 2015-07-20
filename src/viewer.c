@@ -1,9 +1,14 @@
 /*Lambert cylindrical equal area projection viewer 
  *Version 0.1
  *July 2015
+ *
  *David Giannella, School of Arts and Sciences
  *University of Rochester
  *dgiannel@u.rochester.edu
+ *
+ *Alice C. Quillen, School of Arts and Science
+ *University of Rochester
+ *alice.quillen@gmail.com
  *
  *These files may be redistributed and used in accordance with the 
  *GNU General Public License, which has been provided with Sphere-Mapper.
@@ -54,7 +59,7 @@ void display()
 void keyPress(unsigned char key, int x, int y){
 	//char ext[] = ".png";
 	//char * title;
-	char * info = malloc(sizeof(int)*20);
+	char info[500];
 	switch(key){
 		case 'p':
 #ifdef LIBPNG
@@ -91,7 +96,11 @@ void init(void)
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
-	texture = loadTexture("./maps/mars.png", 2048, 1024);
+	char image[] = ("mars.png");
+	char local[50];
+	strcat(local, "./maps/");
+	strcat(local, image);
+	texture = loadTexture(local);
 	add_tex_data();
 	correct_tex_data();
 	glutKeyboardFunc(keyPress);
