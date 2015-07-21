@@ -56,20 +56,23 @@ void keyPress(unsigned char key, int x, int y){
 	//char * title;
 	char info[500];
 	switch(key){
-		case 'p':
+		case 'p': case 'P' :
 #ifdef LIBPNG
 			take_screenshot("img.png");
 #else
 			printf("no LIBPNG = no screenshot\n");
 #endif //LIBPNG
 			break;
-		case 'l':
+		case 'l': case 'L' :
 #ifdef LIBPNG
 			getLatLong(info);
 			take_screenshot(info);
 #else
 			printf("no LIBPNG = no screenshot\n");
 #endif //LIBPNG
+			break;
+		case 'q' : case 'Q' :
+			exit(0);
 			break;
 	}
 }
@@ -78,7 +81,7 @@ void init(void)
 {
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
-	char image[] = ("mars.png");
+	char image[] = ("pia18434quarter.png");
 	char local[50];
 	strcpy(local, "./maps/");
 	strcat(local, image);
