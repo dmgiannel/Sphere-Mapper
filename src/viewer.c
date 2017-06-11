@@ -13,7 +13,7 @@
  *These files may be redistributed and used in accordance with the 
  *GNU General Public License, which has been provided with Sphere-Mapper.
  */
-
+ 
 #define OnWin 0
 #include <stdlib.h>
 #include <stdio.h>

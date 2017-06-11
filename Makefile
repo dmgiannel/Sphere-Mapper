@@ -38,7 +38,7 @@ all :
 	$(CC) $(OPT) $(SDIR)tools.c -c $(CFLAGS)
 	$(CC) $(OPT) $(SDIR)viewer.c -c $(CFLAGS)
 	$(CC) $(OPT) $(SDIR)zpr.c -c $(CFLAGS)
-	$(CC) $(OPT) *.o -o viewer $(LIBS)
+	$(CC) *.o -o viewer $(LIBS)
 	rm -f *.o
 
 	
