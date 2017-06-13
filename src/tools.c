@@ -1,6 +1,6 @@
 /*Lambert cylindrical equal area projection viewer 
- *Version 0.1
- *July 2015
+ *Version 0.2
+ *June 2017
  *
  *David Giannella, School of Arts and Sciences
  *University of Rochester
@@ -42,6 +42,8 @@ int NTRI = 0;
 int NVERT = 0;
 int NCmax = 0;
 int NCOORD = 0;
+int NHEIGHT = 0;
+int NHmax = 0;
 unsigned char* 	image = NULL;
 
 //add vertex to the list, expand list if necessary
@@ -86,6 +88,16 @@ int add_coord(double x, double y){
 	texCoords[NCOORD] = c;
 	NCOORD++;
 	return NCOORD -1;
+}
+
+int add_height(double dr){
+	while (NHmax<=NHEIGHT){
+		NHmax += 128;
+		vertHeights = realloc(vertHeights,sizeof(double)*NHmax);
+	}
+	vertHeights[NHEIGHT] = dr;
+	NHEIGHT++;
+	return NHEIGHT-1;
 }
 
 
@@ -180,9 +192,24 @@ void normalize (struct vertex *v){
   v->x /= r; v->y /= r; v->z /= r;
 }
 
-//import texture from a png image
+//change radial position of a vertex v by dr
+//seemingly messed up ordering of x,y,z to accomodate opengl 3d coords
+void changeR (struct vertex *v, double dr){
+	double z = v->x;
+	double x = v->y;
+	double y = v->z;
+	double r = sqrt(x*x + y*y + z*z);
+	double theta = atan2(sqrt(x*x+y*y), z);
+	double phi = atan2(y, x);
+	r += dr;
+	v->z = r*sin(theta)*cos(phi);
+	v->x = r*sin(theta)*sin(phi);
+	v->y = r*cos(theta);
+}
+
+//import texture from a png image and save width and height for potential later usage
 //https://en.wikibooks.org/wiki/OpenGL_Programming/Intermediate/Textures
-GLuint loadTexture(char *filename) 
+GLuint loadTexture(char *filename, int *width, int *height) 
  {
 	GLuint error = 0;
 	//header for testing if it is a png
@@ -253,6 +280,10 @@ GLuint loadTexture(char *filename)
    //variables to pass to get info
    int bit_depth, color_type;
    png_uint_32 twidth, theight;
+   
+   //get width and height for return
+   *width = png_get_image_width(png_ptr, info_ptr);
+   *height = png_get_image_height(png_ptr, info_ptr);
  
    // get info about png
    png_get_IHDR(png_ptr, info_ptr, &twidth, &theight, &bit_depth, &color_type,
@@ -470,6 +501,46 @@ void getLatLong(char * info){
 	fazi = (int)(fazi+360)%360;
 	sprintf(info, "lat%dlong%dfazi%d.png", (int)(lat*180/M_PI), (int)(longi*180/M_PI), (int)fazi);
 	return;
+}
+
+void do_height_data(GLuint texture, int width, int height){
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glViewport(0, 0, width, height);
+	for(int i = 0; i<NCOORD; i++){
+	GLubyte* pixel = malloc(sizeof(GLubyte) * 3);
+	double xUnShift = texCoords[i].x;
+	double yUnShift = texCoords[i].y;
+	if(xUnShift > 1)
+		xUnShift -= 1;
+	if(yUnShift > 1)
+		yUnShift -= 1;
+	int xP = xUnShift*width;
+	int yP = yUnShift*height;
+	if(xP >= width)
+		xP -= 1;
+	if(yP >= height)
+		yP -= 1;
+	glReadPixels(xP, yP, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
+	store_height_data(pixel);
+	}
+	GLsizei attach[1] = {GL_COLOR_ATTACHMENT0};
+	GLuint toDel[1] = {1};
+	glDeleteFramebuffers(1, toDel);
+	//glInvalidateFramebuffer(GL_FRAMEBUFFER, 1, &attach[0]);
+}
+
+void store_height_data(GLubyte *pixel){
+	double maxIncr = .00867; //based on distance between highest and lowest points on surface
+	double dr = (double)pixel[0]/255.0 * maxIncr - .00241;
+	add_height(dr);
+}
+
+void apply_height_data(){
+	for(int i = 0; i < NHEIGHT; i++)
+		changeR(&vertices[i], vertHeights[i]);
 }
 
 

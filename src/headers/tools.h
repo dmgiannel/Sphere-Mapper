@@ -1,6 +1,6 @@
 /*Lambert cylindrical equal area projection viewer 
- *Version 0.1
- *July 2015
+ *Version 0.2
+ *June 2017
  *
  *David Giannella, School of Arts and Sciences
  *University of Rochester
@@ -28,6 +28,7 @@
 #include <GL/glut.h>
 #endif //__APPLE__
 #include <math.h>
+#include <png.h>
 
 struct coord{
 	double x;
@@ -46,6 +47,9 @@ struct triangle{
 	int i3;
 };
 
+GLuint textures[2];
+GLuint framebuffer;
+
 struct triangle *triangles;
 extern int NTRI;
 
@@ -54,6 +58,9 @@ extern int NVERT;
 
 struct coord *texCoords;
 extern int NCOORD;
+
+double *vertHeights;
+extern int NHEIGHT;
 
 struct latLongUp{
 	double lat;
@@ -69,8 +76,13 @@ void subdivide(struct vertex v1, struct vertex v2, struct vertex v3, int devh);
 void normalize (struct vertex *v);
 void create_sphere(int devh, double radius);
 void correct_tex_data();
-GLuint loadTexture(char *filename);
-void displayKey(unsigned char key, int x, int y);
+GLuint loadTexture(char *filename, int *width, int *height);
+void keyPress(unsigned char key, int x, int y);
 void take_screenshot(char *filename);
 struct latLongUp getLLInfo(struct vertex cpos, struct vertex cup);
 void getLatLong(char * info);
+void changeR (struct vertex *v, double dr);
+void do_height_data(GLuint texture, int width, int height);
+void store_height_data(GLubyte *pixel);
+int add_height(double dr);
+void apply_height_data();

@@ -10,6 +10,8 @@ GENERAL INFO
 ------------------------------------------------
 Sphere-Mapper is a small program in C that takes maps in Lambert Cylindrical Equal-Area format and "unprojects" them so that the user can view the more natural looking spherical, 3D map. The user may rotate around using the mouse, zoom in and take pictures with either no data or coordinate data to identify the location and direction from which it was taken. At all times, the viewer will be locked onto the center of the celestial body being viewed.
 
+As of version 0.2, selecting "mars.png" will also load in "marsheight.png" (MOLA terrain data), which is used to displace vertices in an attempt to match the real, measure martian topography. More controls for this feature (such as multipliers to exaggerate features for easier viewing) are a future goal, as well as height data for other bodies. The depth of subdivision has also been increased to complement this feature (from 6 to 7). Increases startup time (planning to write vertices to a file at startup next and only regenerate if needed to limit this to the first startup).
+
 PREREQUISITES
 ------------------------------------------------
 To run Sphere-mapper, you will need to have the ability to compile programs which rely on OpenGL and libpng. I have managed to compile this program on Windows, Linux (Ubuntu) and OSX so long as my libraries were in order.
