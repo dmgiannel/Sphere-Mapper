@@ -31,14 +31,14 @@
 #include <png.h>
 
 struct coord{
-	double x;
-	double y;
+	float x;
+	float y;
 };
 
 struct vertex {
-	double x;
-	double y;
-	double z;
+	float x;
+	float y;
+	float z;
 };
 
 struct triangle{
@@ -59,30 +59,30 @@ extern int NVERT;
 struct coord *texCoords;
 extern int NCOORD;
 
-double *vertHeights;
+float *vertHeights;
 extern int NHEIGHT;
 
 struct latLongUp{
-	double lat;
-	double longi;
-	double up;
+	float lat;
+	float longi;
+	float up;
 };
 
 int add_vertex(struct vertex);
 int add_face(int i1, int i2, int i3);
-int add_coord(double x, double y);
+int add_coord(float x, float y);
 void add_tex_data();
 void subdivide(struct vertex v1, struct vertex v2, struct vertex v3, int devh);
 void normalize (struct vertex *v);
-void create_sphere(int devh, double radius);
+void create_sphere(int devh, float radius);
 void correct_tex_data();
 GLuint loadTexture(char *filename, int *width, int *height);
 void keyPress(unsigned char key, int x, int y);
 void take_screenshot(char *filename);
 struct latLongUp getLLInfo(struct vertex cpos, struct vertex cup);
 void getLatLong(char * info);
-void changeR (struct vertex *v, double dr);
+void changeR (struct vertex *v, float dr);
 void do_height_data(GLuint texture, int width, int height);
 void store_height_data(GLubyte *pixel);
-int add_height(double dr);
+int add_height(float dr);
 void apply_height_data();

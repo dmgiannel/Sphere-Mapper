@@ -77,7 +77,7 @@ int add_face(int i1, int i2, int i3){
 }
 
 //Add a uv coordinate, expanding list if necessary
-int add_coord(double x, double y){
+int add_coord(float x, float y){
 	struct coord c;
 		c.x = x;
 		c.y = y;
@@ -90,10 +90,10 @@ int add_coord(double x, double y){
 	return NCOORD -1;
 }
 
-int add_height(double dr){
+int add_height(float dr){
 	while (NHmax<=NHEIGHT){
 		NHmax += 128;
-		vertHeights = realloc(vertHeights,sizeof(double)*NHmax);
+		vertHeights = realloc(vertHeights,sizeof(float)*NHmax);
 	}
 	vertHeights[NHEIGHT] = dr;
 	NHEIGHT++;
@@ -109,7 +109,7 @@ int add_height(double dr){
 // masses of all vertices set to 1
 // velocities and accelerations zeroed
 // triangular faces are created as part of the subdivide routine
-void create_sphere(int devh, double radius){
+void create_sphere(int devh, float radius){
    struct vertex v0, v1, v2, v3, v4, v5;
 
 // make an octahedron
@@ -188,19 +188,19 @@ void subdivide(struct vertex v1, struct vertex v2, struct vertex v3, int devh){
 
 // normalize vector (coordinates of particle)
 void normalize (struct vertex *v){
-  double r = sqrt(v->x*v->x + v->y*v->y + v->z*v->z);
+  float r = sqrt(v->x*v->x + v->y*v->y + v->z*v->z);
   v->x /= r; v->y /= r; v->z /= r;
 }
 
 //change radial position of a vertex v by dr
 //seemingly messed up ordering of x,y,z to accomodate opengl 3d coords
-void changeR (struct vertex *v, double dr){
-	double z = v->x;
-	double x = v->y;
-	double y = v->z;
-	double r = sqrt(x*x + y*y + z*z);
-	double theta = atan2(sqrt(x*x+y*y), z);
-	double phi = atan2(y, x);
+void changeR (struct vertex *v, float dr){
+	float z = v->x;
+	float x = v->y;
+	float y = v->z;
+	float r = sqrt(x*x + y*y + z*z);
+	float theta = atan2(sqrt(x*x+y*y), z);
+	float phi = atan2(y, x);
 	r += dr;
 	v->z = r*sin(theta)*cos(phi);
 	v->x = r*sin(theta)*sin(phi);
@@ -349,13 +349,13 @@ GLuint loadTexture(char *filename, int *width, int *height)
  
  //create uv coordinates for each vertex
  void add_tex_data(){
-	 double x;
-	 double y;
+	 float x;
+	 float y;
 	for(int i = 0; i < NVERT; i++){
-		double x1 = vertices[i].x;
-		double y1 = vertices[i].y;
-		double z1 = vertices[i].z;
-		x = 1 - (double)(M_PI - atan2(z1, x1))/(double)(2.0*M_PI);
+		float x1 = vertices[i].x;
+		float y1 = vertices[i].y;
+		float z1 = vertices[i].z;
+		x = 1 - (float)(M_PI - atan2(z1, x1))/(float)(2.0*M_PI);
 		y = 1.0 - acos(y1/sqrt(x1*x1+y1*y1+z1*z1))/M_PI;
 		
 		add_coord(x, y);
@@ -365,12 +365,12 @@ GLuint loadTexture(char *filename, int *width, int *height)
  //correct uv coordinates for each vertex
  void correct_tex_data(){
 	for(int i = 0; i < NTRI; i++){
-		double x1 = texCoords[triangles[i].i1].x;
-		double y1 = texCoords[triangles[i].i1].y;
-		double x2 = texCoords[triangles[i].i2].x;
-		double y2 = texCoords[triangles[i].i2].y;
-		double x3 = texCoords[triangles[i].i3].x;
-		double y3 = texCoords[triangles[i].i3].y;
+		float x1 = texCoords[triangles[i].i1].x;
+		float y1 = texCoords[triangles[i].i1].y;
+		float x2 = texCoords[triangles[i].i2].x;
+		float y2 = texCoords[triangles[i].i2].y;
+		float x3 = texCoords[triangles[i].i3].x;
+		float y3 = texCoords[triangles[i].i3].y;
 		if(fabs(x1 - x2) > .5){
 			if(x1 > .8)
 				x2 += 1;
@@ -483,19 +483,19 @@ void take_screenshot(char *filename){
 //(using up vector from center of image)
 //fazi eqn: http://www.movable-type.co.uk/scripts/latlong.html
 void getLatLong(char * info){
-	double mod[16];
-	glGetDoublev(GL_MODELVIEW_MATRIX, mod);
-	double x = -mod[2];
-	double y = -mod[6];
-	double z = -mod[10];
-	double longi = -atan2(z, x);
-	double lat = -(atan2(sqrt(x*x+z*z),y) - M_PI/2);
-	double ux = mod[1];
-	double uy = mod[5];
-	double uz =	mod[9];
-	double longi2 = -atan2(uz, ux);
-	double lat2 = -(atan2(sqrt(ux*ux+uz*uz),uy) - M_PI/2);
-	double fazi = atan2(sin(longi2-longi)*cos(lat2) , cos(lat)*sin(lat2)
+	float mod[16];
+	glGetFloatv(GL_MODELVIEW_MATRIX, mod);
+	float x = -mod[2];
+	float y = -mod[6];
+	float z = -mod[10];
+	float longi = -atan2(z, x);
+	float lat = -(atan2(sqrt(x*x+z*z),y) - M_PI/2);
+	float ux = mod[1];
+	float uy = mod[5];
+	float uz =	mod[9];
+	float longi2 = -atan2(uz, ux);
+	float lat2 = -(atan2(sqrt(ux*ux+uz*uz),uy) - M_PI/2);
+	float fazi = atan2(sin(longi2-longi)*cos(lat2) , cos(lat)*sin(lat2)
 						-sin(lat)*cos(lat2)*cos(longi2-longi));
 	fazi *= -180/M_PI;
 	fazi = (int)(fazi+360)%360;
@@ -511,8 +511,8 @@ void do_height_data(GLuint texture, int width, int height){
 	glViewport(0, 0, width, height);
 	for(int i = 0; i<NCOORD; i++){
 	GLubyte* pixel = malloc(sizeof(GLubyte) * 3);
-	double xUnShift = texCoords[i].x;
-	double yUnShift = texCoords[i].y;
+	float xUnShift = texCoords[i].x;
+	float yUnShift = texCoords[i].y;
 	if(xUnShift > 1)
 		xUnShift -= 1;
 	if(yUnShift > 1)
@@ -533,8 +533,8 @@ void do_height_data(GLuint texture, int width, int height){
 }
 
 void store_height_data(GLubyte *pixel){
-	double maxIncr = .00867; //based on distance between highest and lowest points on surface
-	double dr = (double)pixel[0]/255.0 * maxIncr - .00241;
+	float maxIncr = .00867; //based on distance between highest and lowest points on surface
+	float dr = (float)pixel[0]/255.0 * maxIncr - .00241;
 	add_height(dr);
 }
 

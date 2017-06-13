@@ -51,8 +51,8 @@ void display()
 	glActiveTexture(GL_TEXTURE0);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glVertexPointer(3, GL_DOUBLE, sizeof(struct vertex), vertices);
-	glTexCoordPointer(2, GL_DOUBLE, sizeof(struct coord), texCoords);
+	glVertexPointer(3, GL_FLOAT, sizeof(struct vertex), vertices);
+	glTexCoordPointer(2, GL_FLOAT, sizeof(struct coord), texCoords);
 	char info [500];
 	getLatLong(info);
 	glutSetWindowTitle(info);
