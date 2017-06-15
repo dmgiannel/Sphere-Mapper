@@ -44,6 +44,8 @@ int NCmax = 0;
 int NCOORD = 0;
 int NHEIGHT = 0;
 int NHmax = 0;
+int NNORM = 0;
+int NNmax = 0;
 unsigned char* 	image = NULL;
 
 //add vertex to the list, expand list if necessary
@@ -60,7 +62,7 @@ int add_vertex(struct vertex v){
 //makes a recording of three indices which define a triangle
 //and adds it to a list
 int add_face(int i1, int i2, int i3){
-	if (i1==i2) return -1;
+	if (i1==i2)	return -1;
 	if (i2==i3) return -1;
 	if (i3==i1) return -1;
 	struct triangle tt;
@@ -74,6 +76,76 @@ int add_face(int i1, int i2, int i3){
 	triangles[NTRI] = tt;
 	NTRI++;
 	return NTRI -1;
+}
+
+int add_normal(struct vertex norm){
+	while (NNmax<=NNORM){
+       NNmax += 128;
+       normals = realloc(normals,sizeof(struct vertex)*NNmax);
+   }
+   normals[NNORM] = norm;
+   NNORM++;
+   return NNORM -1;
+}
+
+void createNormals(int i){
+	struct vertex norm1, norm2, norm3;
+	int i1 = triangles[i].i1;
+	int i2 = triangles[i].i2;
+	int i3 = triangles[i].i3;
+	struct vertex v1 = vertices[i1];
+	struct vertex v2 = vertices[i2];
+	struct vertex v3 = vertices[i3];
+	struct vertex v12, v13, v23, v21, v32, v31;
+	v12.x = v2.x - v1.x; v12.y = v2.y - v1.y; v12.z = v2.z - v1.z;
+	v13.x = v3.x - v1.x; v13.y = v3.y - v1.y; v13.z = v3.z - v1.z;
+	
+	v21.x = v1.x - v2.x; v21.y = v1.y - v2.y; v21.z = v1.z - v2.z;
+	v23.x = v3.x - v2.x; v23.y = v3.y - v2.y; v23.z = v3.z - v2.z;
+	
+	v31.x = v1.x - v3.x; v31.y = v1.y - v3.y; v31.z = v1.z - v3.z;
+	v32.x = v2.x - v3.x; v32.y = v2.y - v3.y; v32.z = v2.z - v3.z;
+	norm1.x = (v13.y)*(v12.z)-(v13.z)*(v12.y);
+	norm1.y = (v13.x)*(v12.z)-(v13.z)*(v12.x);
+	norm1.z = (v13.x)*(v12.y)-(v13.y)*(v12.x);
+	norm2.x = (v21.y)*(v23.z)-(v21.z)*(v23.y);
+	norm2.y = (v21.x)*(v23.z)-(v21.z)*(v23.x);
+	norm2.z = (v21.x)*(v23.y)-(v21.y)*(v23.x);
+	norm3.x = (v32.y)*(v31.z)-(v32.z)*(v31.y);
+	norm3.y = (v32.x)*(v31.z)-(v32.z)*(v31.x);
+	norm3.z = (v32.x)*(v31.y)-(v32.y)*(v31.x);
+	if(normIsSet[i1] == 0){
+		normals[i1] = norm1;
+		normIsSet[i1] = 1;
+	}
+	else{
+		normals[i1].x = (norm1.x + normals[i1].x);
+		normals[i1].y = (norm1.y + normals[i1].y);
+		normals[i1].z = (norm1.z + normals[i1].z);
+	}
+	if(normIsSet[i2] == 0){
+		normals[i2] = norm2;
+		normIsSet[i2] = 1;
+	}
+	else{
+		normals[i2].x = (norm2.x + normals[i2].x);
+		normals[i2].y = (norm2.y + normals[i2].y);
+		normals[i2].z = (norm2.z + normals[i2].z);
+	}
+	if(normIsSet[i3] == 0){
+		normals[i3] = norm3;
+		normIsSet[i3] = 1;
+	}
+	else{
+		normals[i3].x = (norm3.x + normals[i3].x);
+		normals[i3].y = (norm3.y + normals[i3].y);
+		normals[i3].z = (norm3.z + normals[i3].z);
+	}
+}
+
+void normNormals(){
+	for(int i = 0; i<NNORM; i++)
+		normalize(&normals[i]);
 }
 
 //Add a uv coordinate, expanding list if necessary
@@ -111,7 +183,7 @@ int add_height(float dr){
 // triangular faces are created as part of the subdivide routine
 void create_sphere(int devh, float radius){
    struct vertex v0, v1, v2, v3, v4, v5;
-
+   
 // make an octahedron
 		v0.x = 1; v0.y = 0; v0.z = 0; add_vertex(v0);//i=0 
 		v1.x =-1; v1.y = 0; v1.z = 0; add_vertex(v1);//i=1
@@ -142,11 +214,14 @@ void create_sphere(int devh, float radius){
    FILE *fpo;
    fpo = fopen("tri.txt", "a");
    fprintf(fpo,"#\n");
-   for(int i=itri;i<NTRI;i++){
-     fprintf(fpo,"%d %d %d %d\n",i,triangles[i].i1, triangles[i].i2,triangles[i].i3);
+   for(int i=0;i<NTRI;i++){
+     fprintf(fpo,"%d\n %d\n %d\n %d\n",i,triangles[i].i1, triangles[i].i2, triangles[i].i3);
    }
-   fclose(fpo);
-*/
+   for(int i=0;i<NVERT;i++){
+     fprintf(fpo,"%d\n %f\n %f\n %f\n",i,vertices[i].x, vertices[i].y, vertices[i].z);
+   }
+   fclose(fpo);*/
+
 
 }
 
@@ -159,31 +234,38 @@ void create_sphere(int devh, float radius){
 // for sphere starting at imin, indexing for i's are done with respect to imin
 // but vertices are stored with indexing j's including offset imin
 void subdivide(struct vertex v1, struct vertex v2, struct vertex v3, int devh){
-   if (devh==0){ // add triangles to index list
-	   add_face(add_vertex(v1), add_vertex(v2), add_vertex(v3));
+	if (devh==0){ // add triangles to index list
+	   add_face(backCheckVertex(v1), backCheckVertex(v2), backCheckVertex(v3));
        return;
-   }
+	}
    // compute midpoints of edges
-   struct vertex v12, v23, v31;
-   v12.x = (v1.x + v2.x);
-   v23.x = (v2.x + v3.x);
-   v31.x = (v3.x + v1.x);
-   v12.y = (v1.y + v2.y);
-   v23.y = (v2.y + v3.y);
-   v31.y = (v3.y + v1.y);
-   v12.z = (v1.z + v2.z);
-   v23.z = (v2.z + v3.z);
-   v31.z = (v3.z + v1.z);
-   normalize(&v12);
-   normalize(&v23);
-   normalize(&v31);
-
+	struct vertex v12, v23, v31;
+	v12.x = (v1.x + v2.x);
+	v23.x = (v2.x + v3.x);
+	v31.x = (v3.x + v1.x);
+	v12.y = (v1.y + v2.y);
+	v23.y = (v2.y + v3.y);
+	v31.y = (v3.y + v1.y);
+	v12.z = (v1.z + v2.z);
+	v23.z = (v2.z + v3.z);
+	v31.z = (v3.z + v1.z);
+	normalize(&v12);
+	normalize(&v23);
+	normalize(&v31);
 // add the vertices to the particle list
 // add_vertex returns index of added vertex
-   subdivide(v1,v12,v31, devh-1); // recursive call to self
-   subdivide(v2,v23,v12, devh-1);
-   subdivide(v3,v31,v23, devh-1);
-   subdivide(v12,v23,v31,devh-1);
+	subdivide(v1,v12,v31, devh-1); // recursive call to self
+	subdivide(v2,v23,v12, devh-1);
+	subdivide(v3,v31,v23, devh-1);
+	subdivide(v12,v23,v31,devh-1);
+}
+
+int backCheckVertex(struct vertex v){
+	int i = NVERT - 1;
+	for(i; i >= 0; i--)
+		if(v.x == vertices[i].x && v.y == vertices[i].y && v.z == vertices[i].z)
+			return i;
+	return add_vertex(v);
 }
 
 // normalize vector (coordinates of particle)
@@ -357,7 +439,6 @@ GLuint loadTexture(char *filename, int *width, int *height)
 		float z1 = vertices[i].z;
 		x = 1 - (float)(M_PI - atan2(z1, x1))/(float)(2.0*M_PI);
 		y = 1.0 - acos(y1/sqrt(x1*x1+y1*y1+z1*z1))/M_PI;
-		
 		add_coord(x, y);
 	}
  }
@@ -365,60 +446,76 @@ GLuint loadTexture(char *filename, int *width, int *height)
  //correct uv coordinates for each vertex
  void correct_tex_data(){
 	for(int i = 0; i < NTRI; i++){
-		float x1 = texCoords[triangles[i].i1].x;
-		float y1 = texCoords[triangles[i].i1].y;
-		float x2 = texCoords[triangles[i].i2].x;
-		float y2 = texCoords[triangles[i].i2].y;
-		float x3 = texCoords[triangles[i].i3].x;
-		float y3 = texCoords[triangles[i].i3].y;
-		if(fabs(x1 - x2) > .5){
-			if(x1 > .8)
-				x2 += 1;
-			else
-				x1 += 1;
+	int fix = 0;
+	float x1 = texCoords[triangles[i].i1].x;
+ 	float y1 = texCoords[triangles[i].i1].y;
+ 	float x2 = texCoords[triangles[i].i2].x;
+ 	float y2 = texCoords[triangles[i].i2].y;
+ 	float x3 = texCoords[triangles[i].i3].x;
+ 	float y3 = texCoords[triangles[i].i3].y;
+ 		if(fabs(x1 - x2) > .5){
+ 			if(x1 > .8)
+ 				x2 += 1;
+ 			else
+ 				x1 += 1;
+			fix = 1;
+ 		}
+ 		if(fabs(x1 - x3) > .5){
+ 			if(x1 > .8)
+ 				x3 += 1;
+ 			else
+ 				x1 += 1;
+			fix = 1;
+ 		}
+ 		if(fabs(x2 - x3) > .5){
+ 			if(x3 >.8)
+ 				x2 += 1;
+ 			else
+ 				x3 += 1;
+			fix = 1;
+ 		}
+ 		if(fabs(y1 - y2) > .5){
+ 			if(y1 > .8)
+ 				y2 += 1;
+ 			else
+ 				y1 += 1;
+			fix = 1;
+ 		}
+ 		if(fabs(y1 - y3) > .5){
+ 			if(y1 > .8)
+ 				y3 += 1;
+ 			else
+ 				y1 += 1;
+			fix = 1;
+ 		}
+ 		if(fabs(y2 - y3) > .5){
+ 			if(y3 >.8)
+ 				y2 += 1;
+ 			else
+ 				y3 += 1;
+			fix = 1;
+ 		}
+ 		
+		if(fix == 1)
+		{
+ 		struct coord c1, c2, c3;
+ 		c1.x = x1;
+ 		c1.y = y1;
+ 		c2.x = x2;
+ 		c2.y = y2;
+ 		c3.x = x3;
+ 		c3.y = y3;
+ 		struct vertex v1, v2, v3;
+		v1.x = vertices[triangles[i].i1].x; v1.y = vertices[triangles[i].i1].y; v1.z = vertices[triangles[i].i1].z;
+		v2.x = vertices[triangles[i].i2].x; v2.y = vertices[triangles[i].i2].y; v2.z = vertices[triangles[i].i2].z;
+		v3.x = vertices[triangles[i].i3].x; v3.y = vertices[triangles[i].i3].y; v3.z = vertices[triangles[i].i3].z;
+		triangles[i].i1 = add_vertex(v1);
+		triangles[i].i2 = add_vertex(v2);
+		triangles[i].i3 = add_vertex(v3);
+ 		add_coord(c1.x, c1.y);
+		add_coord(c2.x, c2.y);
+		add_coord(c3.x, c3.y);
 		}
-		if(fabs(x1 - x3) > .5){
-			if(x1 > .8)
-				x3 += 1;
-			else
-				x1 += 1;
-		}
-		if(fabs(x2 - x3) > .5){
-			if(x3 >.8)
-				x2 += 1;
-			else
-				x3 += 1;
-		}
-		if(fabs(y1 - y2) > .5){
-			if(y1 > .8)
-				y2 += 1;
-			else
-				y1 += 1;
-		}
-		if(fabs(y1 - y3) > .5){
-			if(y1 > .8)
-				y3 += 1;
-			else
-				y1 += 1;
-		}
-		if(fabs(y2 - y3) > .5){
-			if(y3 >.8)
-				y2 += 1;
-			else
-				y3 += 1;
-		}
-		
-		struct coord c1, c2, c3;
-		c1.x = x1;
-		c1.y = y1;
-		c2.x = x2;
-		c2.y = y2;
-		c3.x = x3;
-		c3.y = y3;
-		
-		texCoords[triangles[i].i1] = c1;
-		texCoords[triangles[i].i2] = c2;
-		texCoords[triangles[i].i3] = c3;
 	}
 }
 
@@ -524,7 +621,7 @@ void do_height_data(GLuint texture, int width, int height){
 	if(yP >= height)
 		yP -= 1;
 	glReadPixels(xP, yP, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
-	store_height_data(pixel);
+	store_height_data(pixel, h_mult);
 	}
 	GLsizei attach[1] = {GL_COLOR_ATTACHMENT0};
 	GLuint toDel[1] = {1};
@@ -532,10 +629,10 @@ void do_height_data(GLuint texture, int width, int height){
 	//glInvalidateFramebuffer(GL_FRAMEBUFFER, 1, &attach[0]);
 }
 
-void store_height_data(GLubyte *pixel){
+void store_height_data(GLubyte *pixel, int m){
 	float maxIncr = .00867; //based on distance between highest and lowest points on surface
 	float dr = (float)pixel[0]/255.0 * maxIncr - .00241;
-	add_height(dr);
+	add_height(m*dr);
 }
 
 void apply_height_data(){

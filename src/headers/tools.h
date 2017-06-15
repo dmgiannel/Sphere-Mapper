@@ -29,6 +29,12 @@
 #endif //__APPLE__
 #include <math.h>
 #include <png.h>
+#define depth 6
+#define TEXTURES 0
+#define NUM_BUFFERS 1
+#define LIBPNG 1
+#define light 1
+#define h_mult 5
 
 struct coord{
 	float x;
@@ -47,6 +53,12 @@ struct triangle{
 	int i3;
 };
 
+struct latLongUp{
+	float lat;
+	float longi;
+	float up;
+};
+
 GLuint textures[2];
 GLuint framebuffer;
 
@@ -62,15 +74,15 @@ extern int NCOORD;
 float *vertHeights;
 extern int NHEIGHT;
 
-struct latLongUp{
-	float lat;
-	float longi;
-	float up;
-};
+struct vertex *normals;
+extern int NNORM;
+
+int *normIsSet;
 
 int add_vertex(struct vertex);
 int add_face(int i1, int i2, int i3);
 int add_coord(float x, float y);
+int add_norm(struct vertex);
 void add_tex_data();
 void subdivide(struct vertex v1, struct vertex v2, struct vertex v3, int devh);
 void normalize (struct vertex *v);
@@ -83,6 +95,9 @@ struct latLongUp getLLInfo(struct vertex cpos, struct vertex cup);
 void getLatLong(char * info);
 void changeR (struct vertex *v, float dr);
 void do_height_data(GLuint texture, int width, int height);
-void store_height_data(GLubyte *pixel);
+void store_height_data(GLubyte *pixel, int m);
 int add_height(float dr);
 void apply_height_data();
+void createNormals(int i);
+void normNormals();
+int backCheckVertex(struct vertex v);

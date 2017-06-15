@@ -38,25 +38,24 @@
 #include <string.h>
 #include "tools.h"
 #include "zpr.h"
-#define depth 7
-#define TEXTURES 0
-#define NUM_BUFFERS 1
-#define LIBPNG 1
 
 void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	glActiveTexture(GL_TEXTURE0);
+	glClientActiveTexture(GL_TEXTURE0);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
 	glVertexPointer(3, GL_FLOAT, sizeof(struct vertex), vertices);
+	glNormalPointer(GL_FLOAT, sizeof(struct vertex), normals);
 	glTexCoordPointer(2, GL_FLOAT, sizeof(struct coord), texCoords);
 	char info [500];
 	getLatLong(info);
 	glutSetWindowTitle(info);
-	glDrawArrays(GL_TRIANGLES, 0, NVERT);
+	glDrawElements(GL_TRIANGLES, NTRI*3, GL_UNSIGNED_INT, triangles);
 	glutSwapBuffers();
 }
 
@@ -88,9 +87,23 @@ void keyPress(unsigned char key, int x, int y){
 
 void init(void)
 {
-	glClearColor(0.0, 0.0, 0.0, 0.0);
+	GLfloat mat_specular[] = {0, 0, 0, 0};
+	GLfloat mat_shininess[] = {10.0};
+ 	GLfloat light_position[] = {0.0, 0.0, -10.0, 1.0};
+ 	GLfloat white_light[] = {1.0, 1.0, 1.0, 1.0};
+ 	GLfloat lmodel_ambient[] = {0.05, 0.05, 0.05, 1.0};
+ 	glShadeModel(GL_SMOOTH);
+ 	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+ 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+ 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, lmodel_ambient);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glEnable(GL_NORMALIZE);
+	glEnable(GL_MULTISAMPLE);
+	glClearColor(0.0, 0.0, 0.0, 0.0);
 	char image[] = ("mars.png");
 	char local[50];
 	strcpy(local, "./maps/");
@@ -111,6 +124,23 @@ void init(void)
 	do_height_data(textures[1], *hwidth, *hheight);
 	apply_height_data();
 	}
+	if(light == 1){
+	NNORM = NVERT;
+	normals = malloc(sizeof(struct vertex)*NNORM);
+	normIsSet = calloc(NNORM, sizeof(int));
+	for(int i = 0; i<NTRI; i++)
+		createNormals(i);
+	}
+	normNormals();
+	FILE *fpo;
+    fpo = fopen("normvsvert.txt", "a");
+    fprintf(fpo,"#\n");
+	for(int i=0;i<NTRI;i++){
+    fprintf(fpo,"%d <%f, %f, %f>\n", i,vertices[triangles[i].i1].x, vertices[triangles[i].i1].y, vertices[triangles[i].i1].z);
+	fprintf(fpo,"%d <%f, %f, %f>\n", i,vertices[triangles[i].i2].x, vertices[triangles[i].i2].y, vertices[triangles[i].i2].z);
+	fprintf(fpo,"%d <%f, %f, %f>\n", i,vertices[triangles[i].i3].x, vertices[triangles[i].i3].y, vertices[triangles[i].i3].z);
+    }
+    fclose(fpo);
 	glutKeyboardFunc(keyPress);
 	
 }
@@ -129,7 +159,7 @@ int main(int argc, char** argv)
 {
 	create_sphere(depth, 1);
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(500, 500);
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow("hello");
