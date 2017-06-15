@@ -4,7 +4,7 @@ Sphere-Mapper - A more natural way to view maps
 ------------------------------------------------
 .. image:: http://i.imgur.com/94XUZ3O.png 
 .. image:: http://i.imgur.com/YeN7AwE.png 
-.. image:: http://i.imgur.com/m5C0KII.png
+.. image:: http://i.imgur.com/cjYI2yt.png
 
 GENERAL INFO
 ------------------------------------------------
