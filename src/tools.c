@@ -605,7 +605,6 @@ void do_height_data(GLuint texture, int width, int height){
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	glViewport(0, 0, width, height);
 	for(int i = 0; i<NCOORD; i++){
 	GLubyte* pixel = malloc(sizeof(GLubyte) * 3);
 	float xUnShift = texCoords[i].x;
